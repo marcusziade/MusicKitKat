@@ -4,10 +4,16 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/user/musickitkat/client"
 	"github.com/user/musickitkat/models"
 )
+
+// commaSeparated joins a slice of strings with commas.
+func commaSeparated(items []string) string {
+	return strings.Join(items, ",")
+}
 
 // SearchService provides search functionality for the Apple Music API.
 type SearchService struct {
@@ -57,6 +63,18 @@ func (s *SearchService) Search(ctx context.Context, term string, types []string,
 		if options.LanguageTag != "" {
 			queryParams.Set("l", options.LanguageTag)
 		}
+
+		if len(options.Include) > 0 {
+			queryParams.Set("include", commaSeparated(options.Include))
+		}
+
+		if len(options.Exclude) > 0 {
+			queryParams.Set("exclude", commaSeparated(options.Exclude))
+		}
+
+		if len(options.Extend) > 0 {
+			queryParams.Set("extend", commaSeparated(options.Extend))
+		}
 	}
 
 	path := s.buildPath(fmt.Sprintf("catalog/%s/search", s.storefront), queryParams)
@@ -95,3 +113,53 @@ func (s *SearchService) SearchHints(ctx context.Context, term string) ([]string,
 	return response.Results.Terms, nil
 }
 
+// SearchLibrary searches for resources in the user's library.
+// This method requires a user token to be set on the client.
+func (s *SearchService) SearchLibrary(ctx context.Context, term string, types []string, options *models.SearchOptions) (*models.SearchResults, error) {
+	if term == "" {
+		return nil, fmt.Errorf("search term is required")
+	}
+
+	queryParams := url.Values{}
+	queryParams.Set("term", term)
+
+	if len(types) > 0 {
+		queryParams.Set("types", commaSeparated(types))
+	}
+
+	if options != nil {
+		if options.Limit > 0 {
+			queryParams.Set("limit", fmt.Sprintf("%d", options.Limit))
+		}
+
+		if options.Offset > 0 {
+			queryParams.Set("offset", fmt.Sprintf("%d", options.Offset))
+		}
+
+		if options.LanguageTag != "" {
+			queryParams.Set("l", options.LanguageTag)
+		}
+
+		if len(options.Include) > 0 {
+			queryParams.Set("include", commaSeparated(options.Include))
+		}
+
+		if len(options.Exclude) > 0 {
+			queryParams.Set("exclude", commaSeparated(options.Exclude))
+		}
+
+		if len(options.Extend) > 0 {
+			queryParams.Set("extend", commaSeparated(options.Extend))
+		}
+	}
+
+	path := s.buildPath("me/library/search", queryParams)
+
+	var response models.SearchResults
+	err := s.client.Get(ctx, path, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
+}

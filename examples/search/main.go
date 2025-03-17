@@ -9,6 +9,7 @@ import (
 
 	"github.com/user/musickitkat"
 	"github.com/user/musickitkat/auth"
+	"github.com/user/musickitkat/models"
 )
 
 func main() {
@@ -66,9 +67,21 @@ func main() {
 	fmt.Printf("Using developer token with KeyID: %s, TeamID: %s, MusicID: %s\n", 
 		keyID, teamID, musicID)
 
-	// Search for songs
+	// Search for multiple resource types
 	ctx := context.Background()
-	results, err := client.Search.Search(ctx, searchQuery, []string{string(musickitkat.SearchTypesSongs)}, nil)
+	types := []string{
+		string(musickitkat.SearchTypesSongs),
+		string(musickitkat.SearchTypesAlbums),
+		string(musickitkat.SearchTypesArtists),
+	}
+	
+	// Create search options with relationships included
+	options := &models.SearchOptions{
+		Limit: 5,
+		Include: []string{"artists"},
+	}
+	
+	results, err := client.Search.Search(ctx, searchQuery, types, options)
 	if err != nil {
 		// Enhanced error reporting
 		log.Printf("Failed to search Apple Music API: %v", err)
@@ -79,8 +92,34 @@ func main() {
 
 	// Print results
 	fmt.Println("Search Results:")
-	for _, song := range results.Results.Songs.Data {
-		fmt.Printf("- %s by %s (Album: %s)\n", song.Attributes.Name, song.Attributes.ArtistName, song.Attributes.AlbumName)
+	
+	// Print song results
+	if len(results.Results.Songs.Data) > 0 {
+		fmt.Println("\nSongs:")
+		for _, song := range results.Results.Songs.Data {
+			fmt.Printf("- %s by %s (Album: %s)\n", 
+				song.Attributes.Name, 
+				song.Attributes.ArtistName, 
+				song.Attributes.AlbumName)
+		}
+	}
+	
+	// Print album results
+	if len(results.Results.Albums.Data) > 0 {
+		fmt.Println("\nAlbums:")
+		for _, album := range results.Results.Albums.Data {
+			fmt.Printf("- %s by %s\n", 
+				album.Attributes.Name, 
+				album.Attributes.ArtistName)
+		}
+	}
+	
+	// Print artist results
+	if len(results.Results.Artists.Data) > 0 {
+		fmt.Println("\nArtists:")
+		for _, artist := range results.Results.Artists.Data {
+			fmt.Printf("- %s\n", artist.Attributes.Name)
+		}
 	}
 }
 

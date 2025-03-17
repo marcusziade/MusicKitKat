@@ -38,12 +38,16 @@ MusicKitKat supports searching for the following types of resources:
 ```go
 // SearchTypes represents the types of resources that can be searched.
 const (
-    SearchTypesSongs       SearchTypes = "songs"
-    SearchTypesAlbums      SearchTypes = "albums"
-    SearchTypesArtists     SearchTypes = "artists"
-    SearchTypesPlaylists   SearchTypes = "playlists"
-    SearchTypesMusicVideos SearchTypes = "music-videos"
-    SearchTypesStations    SearchTypes = "stations"
+    SearchTypesSongs         SearchTypes = "songs"
+    SearchTypesAlbums        SearchTypes = "albums"
+    SearchTypesArtists       SearchTypes = "artists"
+    SearchTypesPlaylists     SearchTypes = "playlists"
+    SearchTypesMusicVideos   SearchTypes = "music-videos"
+    SearchTypesStations      SearchTypes = "stations"
+    SearchTypesCurators      SearchTypes = "curators"
+    SearchTypesRadioStations SearchTypes = "radio-stations"
+    SearchTypesAppleCurators SearchTypes = "apple-curators"
+    SearchTypesRecordLabels  SearchTypes = "record-labels"
 )
 ```
 
@@ -74,6 +78,9 @@ options := &models.SearchOptions{
     Offset:      0,          // Offset for pagination
     Storefront:  "us",       // Storefront to search in
     LanguageTag: "en-US",    // Language tag
+    Include:     []string{"artists"}, // Include specific relationships
+    Exclude:     []string{"genres"},  // Exclude specific fields
+    Extend:      []string{"artistUrl"}, // Extend specific fields
 }
 
 results, err := client.Search.Search(ctx, "The Beatles", types, options)
@@ -113,6 +120,30 @@ if len(results.Results.Playlists.Data) > 0 {
     fmt.Println("Found playlists:")
     for _, playlist := range results.Results.Playlists.Data {
         fmt.Printf("- %s\n", playlist.Attributes.Name)
+    }
+}
+
+// Access music video results
+if len(results.Results.MusicVideos.Data) > 0 {
+    fmt.Println("Found music videos:")
+    for _, video := range results.Results.MusicVideos.Data {
+        fmt.Printf("- %s by %s\n", video.Attributes.Name, video.Attributes.ArtistName)
+    }
+}
+
+// Access curators results
+if len(results.Results.Curators.Data) > 0 {
+    fmt.Println("Found curators:")
+    for _, curator := range results.Results.Curators.Data {
+        fmt.Printf("- %s\n", curator.Attributes.Name)
+    }
+}
+
+// Access radio stations results
+if len(results.Results.RadioStations.Data) > 0 {
+    fmt.Println("Found radio stations:")
+    for _, station := range results.Results.RadioStations.Data {
+        fmt.Printf("- %s\n", station.Attributes.Name)
     }
 }
 ```
@@ -171,4 +202,34 @@ options := &models.SearchOptions{
     Storefront: "fr", // France storefront
 }
 results, err := client.Search.Search(ctx, "Daft Punk", types, options)
+```
+
+## Library Search
+
+You can search for items in the user's library. This requires a user token:
+
+```go
+// Set the user token
+client := musickitkat.NewClient(
+    musickitkat.WithDeveloperToken(developerToken),
+    musickitkat.WithUserToken(userToken),
+)
+
+// Search in the user's library
+types := []string{
+    string(musickitkat.SearchTypesSongs),
+    string(musickitkat.SearchTypesAlbums),
+}
+libraryResults, err := client.Search.SearchLibrary(ctx, "My favorite songs", types, nil)
+if err != nil {
+    // Handle error
+}
+
+// Access song results from the user's library
+if len(libraryResults.Results.Songs.Data) > 0 {
+    fmt.Println("Found songs in your library:")
+    for _, song := range libraryResults.Results.Songs.Data {
+        fmt.Printf("- %s by %s\n", song.Attributes.Name, song.Attributes.ArtistName)
+    }
+}
 ```

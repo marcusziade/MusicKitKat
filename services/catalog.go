@@ -176,11 +176,6 @@ func (s *CatalogService) GetPlaylists(ctx context.Context, ids []string) ([]mode
 	return response.Data, nil
 }
 
-// commaSeparated joins string slices with commas.
-func commaSeparated(items []string) string {
-	return joinWithDelimiter(items, ",")
-}
-
 // joinWithDelimiter joins string slices with the specified delimiter.
 func joinWithDelimiter(items []string, delimiter string) string {
 	if len(items) == 0 {
@@ -194,4 +189,3 @@ func joinWithDelimiter(items []string, delimiter string) string {
 
 	return result
 }
-

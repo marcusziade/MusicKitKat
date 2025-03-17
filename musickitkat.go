@@ -115,10 +115,14 @@ const (
 type SearchTypes string
 
 const (
-	SearchTypesSongs       SearchTypes = "songs"
-	SearchTypesAlbums      SearchTypes = "albums"
-	SearchTypesArtists     SearchTypes = "artists"
-	SearchTypesPlaylists   SearchTypes = "playlists"
-	SearchTypesMusicVideos SearchTypes = "music-videos"
-	SearchTypesStations    SearchTypes = "stations"
+	SearchTypesSongs         SearchTypes = "songs"
+	SearchTypesAlbums        SearchTypes = "albums"
+	SearchTypesArtists       SearchTypes = "artists"
+	SearchTypesPlaylists     SearchTypes = "playlists"
+	SearchTypesMusicVideos   SearchTypes = "music-videos"
+	SearchTypesStations      SearchTypes = "stations"
+	SearchTypesCurators      SearchTypes = "curators"
+	SearchTypesRadioStations SearchTypes = "radio-stations"
+	SearchTypesAppleCurators SearchTypes = "apple-curators"
+	SearchTypesRecordLabels  SearchTypes = "record-labels"
 )
