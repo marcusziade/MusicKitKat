@@ -101,17 +101,34 @@ fmt.Printf("Album: %s by %s\n", album.Attributes.Name, album.Attributes.ArtistNa
 To access a user's library, you need a user token:
 
 ```go
-// Set user token on client
-client.UserToken = "user-token"
+// Initialize client with both developer and user tokens
+client := musickitkat.NewClient(
+    musickitkat.WithDeveloperToken(developerToken),
+    musickitkat.WithUserToken(userToken),
+)
 
 // Get user's playlists
-playlists, err := client.Library.GetUserPlaylists(ctx)
+playlists, err := client.Playlists.GetUserPlaylists(ctx)
 if err != nil {
     // Handle error
 }
 
 for _, playlist := range playlists {
-    fmt.Printf("Playlist: %s\n", playlist.Attributes.Name)
+    fmt.Printf("Playlist: %s (%d tracks)\n", 
+        playlist.Attributes.Name, 
+        playlist.Attributes.TrackCount)
+}
+
+// Get user's playlists with pagination and include options
+options := models.QueryParameters{
+    Limit:   25,
+    Offset:  0,
+    Include: []string{"tracks"},
+}
+
+playlists, err := client.Playlists.GetUserPlaylistsWithOptions(ctx, options)
+if err != nil {
+    // Handle error
 }
 ```
 

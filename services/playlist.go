@@ -108,6 +108,25 @@ func (s *PlaylistService) GetUserPlaylists(ctx context.Context) ([]models.Playli
 	return response.Data, nil
 }
 
+// GetUserPlaylistsWithOptions gets playlists in the user's library with the specified options.
+func (s *PlaylistService) GetUserPlaylistsWithOptions(ctx context.Context, options models.QueryParameters) ([]models.Playlist, error) {
+	path := "me/library/playlists"
+
+	// Build query parameters from options
+	queryParams := s.buildQueryParams(options)
+	if len(queryParams) > 0 {
+		path = s.buildPath(path, queryParams)
+	}
+
+	var response models.PlaylistsResponse
+	err := s.client.Get(ctx, path, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Data, nil
+}
+
 // GetUserPlaylistTracks gets the tracks in a user's playlist.
 func (s *PlaylistService) GetUserPlaylistTracks(ctx context.Context, id string) ([]models.Song, error) {
 	path := fmt.Sprintf("me/library/playlists/%s/tracks", id)

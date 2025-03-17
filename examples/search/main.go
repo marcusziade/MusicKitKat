@@ -18,6 +18,7 @@ func main() {
 	keyID := os.Getenv("APPLE_KEY_ID")
 	privateKeyPath := os.Getenv("APPLE_PRIVATE_KEY_PATH")
 	musicID := os.Getenv("APPLE_MUSIC_ID")
+	userToken := os.Getenv("APPLE_USER_TOKEN") // Optional for full demo
 
 	// Check each variable individually to provide more specific error messages
 	missingVars := []string{}
@@ -51,11 +52,22 @@ func main() {
 		log.Fatalf("Failed to create developer token: %v", err)
 	}
 
-	// Initialize client with debug logging enabled
-	client := musickitkat.NewClient(
+	// Initialize client options
+	clientOptions := []musickitkat.ClientOption{
 		musickitkat.WithDeveloperToken(developerToken),
 		musickitkat.WithLogLevel(musickitkat.LogLevelInfo),
-	)
+	}
+	
+	// Add user token if available
+	if userToken != "" {
+		clientOptions = append(clientOptions, musickitkat.WithUserToken(userToken))
+	}
+	
+	// Initialize client
+	client := musickitkat.NewClient(clientOptions...)
+
+	// Create context
+	ctx := context.Background()
 
 	// Get search query from command line arguments or use a default
 	searchQuery := "The Beatles"
@@ -68,7 +80,6 @@ func main() {
 		keyID, teamID, musicID)
 
 	// Search for multiple resource types
-	ctx := context.Background()
 	types := []string{
 		string(musickitkat.SearchTypesSongs),
 		string(musickitkat.SearchTypesAlbums),
@@ -120,6 +131,29 @@ func main() {
 		for _, artist := range results.Results.Artists.Data {
 			fmt.Printf("- %s\n", artist.Attributes.Name)
 		}
+	}
+	
+	// If user token is available, fetch user playlists
+	if userToken != "" {
+		fmt.Println("\n--- User Playlists ---")
+		// Get user's playlists with pagination and relationship options
+		queryOptions := models.QueryParameters{
+			Limit:  5, // Limit to 5 playlists for demo
+			Offset: 0,
+			Include: []string{"tracks"},
+		}
+		
+		playlists, err := client.Playlists.GetUserPlaylistsWithOptions(ctx, queryOptions)
+		if err != nil {
+			log.Printf("Failed to get user playlists: %v", err)
+		} else {
+			fmt.Println("\nYour Playlists:")
+			for i, playlist := range playlists {
+				fmt.Printf("%d. %s (%d tracks)\n", i+1, playlist.Attributes.Name, playlist.Attributes.TrackCount)
+			}
+		}
+	} else {
+		fmt.Println("\nTo view your playlists, set the APPLE_USER_TOKEN environment variable.")
 	}
 }
 
