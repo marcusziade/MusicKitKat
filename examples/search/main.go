@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/user/musickitkat"
 	"github.com/user/musickitkat/auth"
@@ -17,8 +18,24 @@ func main() {
 	privateKeyPath := os.Getenv("APPLE_PRIVATE_KEY_PATH")
 	musicID := os.Getenv("APPLE_MUSIC_ID")
 
-	if teamID == "" || keyID == "" || privateKeyPath == "" || musicID == "" {
-		log.Fatal("Missing required environment variables. Please set APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_PRIVATE_KEY_PATH, and APPLE_MUSIC_ID.")
+	// Check each variable individually to provide more specific error messages
+	missingVars := []string{}
+	if teamID == "" {
+		missingVars = append(missingVars, "APPLE_TEAM_ID")
+	}
+	if keyID == "" {
+		missingVars = append(missingVars, "APPLE_KEY_ID")
+	}
+	if privateKeyPath == "" {
+		missingVars = append(missingVars, "APPLE_PRIVATE_KEY_PATH")
+	}
+	if musicID == "" {
+		missingVars = append(missingVars, "APPLE_MUSIC_ID")
+	}
+
+	if len(missingVars) > 0 {
+		log.Fatalf("Missing required environment variables: %s\n\nRefer to docs/authentication.md for details on setting up Apple Music API credentials.", 
+			strings.Join(missingVars, ", "))
 	}
 
 	// Read private key
@@ -33,16 +50,31 @@ func main() {
 		log.Fatalf("Failed to create developer token: %v", err)
 	}
 
-	// Initialize client
+	// Initialize client with debug logging enabled
 	client := musickitkat.NewClient(
 		musickitkat.WithDeveloperToken(developerToken),
+		musickitkat.WithLogLevel(musickitkat.LogLevelInfo),
 	)
+
+	// Get search query from command line arguments or use a default
+	searchQuery := "The Beatles"
+	if len(os.Args) > 1 {
+		searchQuery = os.Args[1]
+	}
+	
+	fmt.Printf("Searching Apple Music for: %s\n", searchQuery)
+	fmt.Printf("Using developer token with KeyID: %s, TeamID: %s, MusicID: %s\n", 
+		keyID, teamID, musicID)
 
 	// Search for songs
 	ctx := context.Background()
-	results, err := client.Search.Search(ctx, "The Beatles", []string{string(musickitkat.SearchTypesSongs)}, nil)
+	results, err := client.Search.Search(ctx, searchQuery, []string{string(musickitkat.SearchTypesSongs)}, nil)
 	if err != nil {
-		log.Fatalf("Failed to search: %v", err)
+		// Enhanced error reporting
+		log.Printf("Failed to search Apple Music API: %v", err)
+		log.Printf("Debug: Verify your Apple Developer credentials at https://developer.apple.com/account")
+		log.Printf("Debug: Ensure your Apple Music private key is valid and accessible")
+		log.Fatalf("Debug: If the error persists, check Apple Music API status for service disruptions")
 	}
 
 	// Print results

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"strings"
 	"time"
 
 	"github.com/user/musickitkat/errors"
@@ -289,6 +290,28 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 		for key, values := range resp.Header {
 			for _, value := range values {
 				c.log(LogLevelDebug, "  %s: %s", key, value)
+			}
+		}
+
+		// Add specific guidance for authentication errors
+		if resp.StatusCode == 401 {
+			authHeader := resp.Request.Header.Get("Authorization")
+			c.log(LogLevelError, "Authentication failed (401 Unauthorized)")
+			
+			// Check if developer token is present
+			if authHeader == "" || authHeader == "Bearer " {
+				c.log(LogLevelError, "Developer token is missing. Ensure you've set it with WithDeveloperToken()")
+				return nil, fmt.Errorf("API authentication error (status 401): Developer token is missing or invalid. " +
+					"Check your APPLE_TEAM_ID, APPLE_KEY_ID, APPLE_MUSIC_ID, and private key")
+			}
+			
+			// Check if User-Token is needed for this endpoint but not provided
+			path := resp.Request.URL.Path
+			if (strings.Contains(path, "/me/") || strings.Contains(path, "/library/")) && 
+			   resp.Request.Header.Get("Music-User-Token") == "" {
+				c.log(LogLevelError, "Music-User-Token is required for this endpoint but is missing")
+				return nil, fmt.Errorf("API authentication error (status 401): Music-User-Token is required for %s but is missing. " +
+					"Use WithUserToken() to set the user token", path)
 			}
 		}
 
