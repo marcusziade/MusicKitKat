@@ -96,6 +96,27 @@ if err != nil {
 fmt.Printf("Album: %s by %s\n", album.Attributes.Name, album.Attributes.ArtistName)
 ```
 
+### Getting Song Preview URLs
+
+```go
+// Method 1: Get a song and extract its preview URL
+song, err := client.Catalog.GetSong(ctx, "song-id")
+if err != nil {
+    // Handle error
+}
+
+previewURL := song.GetPreviewURL()
+fmt.Printf("Preview URL: %s\n", previewURL)
+
+// Method 2: Get the preview URL directly
+previewURL, err := client.Catalog.GetSongPreviewURL(ctx, "song-id")
+if err != nil {
+    // Handle error
+}
+
+fmt.Printf("Preview URL: %s\n", previewURL)
+```
+
 ### User Library Access
 
 To access a user's library, you need a user token:

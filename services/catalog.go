@@ -176,6 +176,21 @@ func (s *CatalogService) GetPlaylists(ctx context.Context, ids []string) ([]mode
 	return response.Data, nil
 }
 
+// GetSongPreviewURL gets the preview URL for a song by ID.
+func (s *CatalogService) GetSongPreviewURL(ctx context.Context, id string) (string, error) {
+	song, err := s.GetSong(ctx, id)
+	if err != nil {
+		return "", err
+	}
+	
+	previewURL := song.GetPreviewURL()
+	if previewURL == "" {
+		return "", fmt.Errorf("no preview available for song: %s", id)
+	}
+	
+	return previewURL, nil
+}
+
 // joinWithDelimiter joins string slices with the specified delimiter.
 func joinWithDelimiter(items []string, delimiter string) string {
 	if len(items) == 0 {

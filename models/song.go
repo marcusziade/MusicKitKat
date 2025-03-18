@@ -112,6 +112,29 @@ func (s *Song) GetArtworkURL(width, height int) string {
 	return s.Attributes.Artwork.URL
 }
 
+// GetPreviewURL returns the URL for the first playable preview of the song.
+// Returns an empty string if no playable preview is available.
+func (s *Song) GetPreviewURL() string {
+	// Check if there are any previews
+	if len(s.Attributes.Previews) == 0 {
+		// Fallback to PlayParams preview URL if available
+		if s.Attributes.PlayParams.PreviewURL != "" {
+			return s.Attributes.PlayParams.PreviewURL
+		}
+		return ""
+	}
+	
+	// Find the first playable preview
+	for _, preview := range s.Attributes.Previews {
+		if preview.Playable {
+			return preview.URL
+		}
+	}
+	
+	// If no playable preview found, return the first preview URL
+	return s.Attributes.Previews[0].URL
+}
+
 // FormatReleaseDate formats the release date as a time.Time.
 func (s *Song) FormatReleaseDate() (time.Time, error) {
 	return time.Parse("2006-01-02", s.Attributes.ReleaseDate)
