@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/user/musickitkat"
-	"github.com/user/musickitkat/auth"
+	"github.com/marcusziade/musickitkat"
+	"github.com/marcusziade/musickitkat/auth"
 )
 
 func main() {
@@ -67,3 +67,4 @@ func main() {
 		fmt.Printf("Preview URL: %s\n", noPreviewURL)
 	}
 }
+

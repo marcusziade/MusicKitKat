@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/user/musickitkat/client"
+	"github.com/marcusziade/musickitkat/client"
 )
 
 // RecommendationService provides access to recommendation endpoints of the Apple Music API.
@@ -118,4 +118,3 @@ func (s *RecommendationService) GetCuratedPlaylists(ctx context.Context, limit i
 
 	return response.Data, nil
 }
-

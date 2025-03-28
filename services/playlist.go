@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/user/musickitkat/client"
-	"github.com/user/musickitkat/models"
+	"github.com/marcusziade/musickitkat/client"
+	"github.com/marcusziade/musickitkat/models"
 )
 
 // PlaylistService provides access to playlist-related endpoints of the Apple Music API.

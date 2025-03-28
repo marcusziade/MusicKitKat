@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/user/musickitkat"
-	"github.com/user/musickitkat/auth"
-	"github.com/user/musickitkat/models"
+	"github.com/marcusziade/musickitkat"
+	"github.com/marcusziade/musickitkat/auth"
+	"github.com/marcusziade/musickitkat/models"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 	}
 
 	if len(missingVars) > 0 {
-		log.Fatalf("Missing required environment variables: %s\n\nRefer to docs/authentication.md for details on setting up Apple Music API credentials.", 
+		log.Fatalf("Missing required environment variables: %s\n\nRefer to docs/authentication.md for details on setting up Apple Music API credentials.",
 			strings.Join(missingVars, ", "))
 	}
 
@@ -57,12 +57,12 @@ func main() {
 		musickitkat.WithDeveloperToken(developerToken),
 		musickitkat.WithLogLevel(musickitkat.LogLevelInfo),
 	}
-	
+
 	// Add user token if available
 	if userToken != "" {
 		clientOptions = append(clientOptions, musickitkat.WithUserToken(userToken))
 	}
-	
+
 	// Initialize client
 	client := musickitkat.NewClient(clientOptions...)
 
@@ -74,9 +74,9 @@ func main() {
 	if len(os.Args) > 1 {
 		searchQuery = os.Args[1]
 	}
-	
+
 	fmt.Printf("Searching Apple Music for: %s\n", searchQuery)
-	fmt.Printf("Using developer token with KeyID: %s, TeamID: %s, MusicID: %s\n", 
+	fmt.Printf("Using developer token with KeyID: %s, TeamID: %s, MusicID: %s\n",
 		keyID, teamID, musicID)
 
 	// Search for multiple resource types
@@ -85,13 +85,13 @@ func main() {
 		string(musickitkat.SearchTypesAlbums),
 		string(musickitkat.SearchTypesArtists),
 	}
-	
+
 	// Create search options with relationships included
 	options := &models.SearchOptions{
-		Limit: 5,
+		Limit:   5,
 		Include: []string{"artists"},
 	}
-	
+
 	results, err := client.Search.Search(ctx, searchQuery, types, options)
 	if err != nil {
 		// Enhanced error reporting
@@ -103,28 +103,28 @@ func main() {
 
 	// Print results
 	fmt.Println("Search Results:")
-	
+
 	// Print song results
 	if len(results.Results.Songs.Data) > 0 {
 		fmt.Println("\nSongs:")
 		for _, song := range results.Results.Songs.Data {
-			fmt.Printf("- %s by %s (Album: %s)\n", 
-				song.Attributes.Name, 
-				song.Attributes.ArtistName, 
+			fmt.Printf("- %s by %s (Album: %s)\n",
+				song.Attributes.Name,
+				song.Attributes.ArtistName,
 				song.Attributes.AlbumName)
 		}
 	}
-	
+
 	// Print album results
 	if len(results.Results.Albums.Data) > 0 {
 		fmt.Println("\nAlbums:")
 		for _, album := range results.Results.Albums.Data {
-			fmt.Printf("- %s by %s\n", 
-				album.Attributes.Name, 
+			fmt.Printf("- %s by %s\n",
+				album.Attributes.Name,
 				album.Attributes.ArtistName)
 		}
 	}
-	
+
 	// Print artist results
 	if len(results.Results.Artists.Data) > 0 {
 		fmt.Println("\nArtists:")
@@ -132,17 +132,17 @@ func main() {
 			fmt.Printf("- %s\n", artist.Attributes.Name)
 		}
 	}
-	
+
 	// If user token is available, fetch user playlists
 	if userToken != "" {
 		fmt.Println("\n--- User Playlists ---")
 		// Get user's playlists with pagination and relationship options
 		queryOptions := models.QueryParameters{
-			Limit:  5, // Limit to 5 playlists for demo
-			Offset: 0,
+			Limit:   5, // Limit to 5 playlists for demo
+			Offset:  0,
 			Include: []string{"tracks"},
 		}
-		
+
 		playlists, err := client.Playlists.GetUserPlaylistsWithOptions(ctx, queryOptions)
 		if err != nil {
 			log.Printf("Failed to get user playlists: %v", err)
@@ -156,4 +156,3 @@ func main() {
 		fmt.Println("\nTo view your playlists, set the APPLE_USER_TOKEN environment variable.")
 	}
 }
-

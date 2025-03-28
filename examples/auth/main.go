@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/user/musickitkat"
-	"github.com/user/musickitkat/auth"
-	"github.com/user/musickitkat/models"
+	"github.com/marcusziade/musickitkat"
+	"github.com/marcusziade/musickitkat/auth"
+	"github.com/marcusziade/musickitkat/models"
 )
 
 func main() {
@@ -55,7 +55,7 @@ func runAuthServer() {
 	}
 
 	if len(missingVars) > 0 {
-		log.Fatalf("Missing required environment variables: %s\n\nRefer to docs/authentication.md for details on setting up Apple Music API credentials.", 
+		log.Fatalf("Missing required environment variables: %s\n\nRefer to docs/authentication.md for details on setting up Apple Music API credentials.",
 			strings.Join(missingVars, ", "))
 	}
 
@@ -152,7 +152,7 @@ func demoUserPlaylists() {
 	}
 
 	if len(missingVars) > 0 {
-		log.Fatalf("Missing required environment variables: %s\n\nRefer to docs/authentication.md for details on setting up Apple Music API credentials.", 
+		log.Fatalf("Missing required environment variables: %s\n\nRefer to docs/authentication.md for details on setting up Apple Music API credentials.",
 			strings.Join(missingVars, ", "))
 	}
 
@@ -195,7 +195,7 @@ func demoUserPlaylists() {
 	fmt.Printf("\nFound %d playlists in your Apple Music library:\n\n", len(playlists))
 	for i, playlist := range playlists {
 		fmt.Printf("%d. %s (%d tracks)\n", i+1, playlist.Attributes.Name, playlist.Attributes.TrackCount)
-		
+
 		// If we have relationships data, print a few tracks
 		if playlist.Relationships.Tracks.Data != nil && len(playlist.Relationships.Tracks.Data) > 0 {
 			fmt.Println("   Sample tracks:")
@@ -204,7 +204,7 @@ func demoUserPlaylists() {
 			if len(playlist.Relationships.Tracks.Data) < maxTracks {
 				maxTracks = len(playlist.Relationships.Tracks.Data)
 			}
-			
+
 			// Get the actual songs for this playlist
 			if maxTracks > 0 {
 				songs, err := client.Playlists.GetUserPlaylistTracks(ctx, playlist.ID)
@@ -220,3 +220,4 @@ func demoUserPlaylists() {
 		fmt.Println()
 	}
 }
+

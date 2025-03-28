@@ -1,4 +1,4 @@
-module github.com/user/musickitkat
+module github.com/marcusziade/musickitkat
 
 go 1.23.0
 

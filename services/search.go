@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/user/musickitkat/client"
-	"github.com/user/musickitkat/models"
+	"github.com/marcusziade/musickitkat/client"
+	"github.com/marcusziade/musickitkat/models"
 )
 
 // commaSeparated joins a slice of strings with commas.

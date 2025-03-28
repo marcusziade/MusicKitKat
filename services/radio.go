@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/user/musickitkat/client"
+	"github.com/marcusziade/musickitkat/client"
 )
 
 // RadioService provides access to radio endpoints of the Apple Music API.
@@ -103,4 +103,3 @@ func (s *RadioService) GetRecentStations(ctx context.Context, limit int) (interf
 
 	return response.Data, nil
 }
-

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/user/musickitkat/client"
-	"github.com/user/musickitkat/models"
+	"github.com/marcusziade/musickitkat/client"
+	"github.com/marcusziade/musickitkat/models"
 )
 
 // LibraryService provides access to the user's library endpoints of the Apple Music API.
@@ -195,4 +195,3 @@ func (s *LibraryService) AddToLibrary(ctx context.Context, ids []string, resourc
 
 	return nil
 }
-

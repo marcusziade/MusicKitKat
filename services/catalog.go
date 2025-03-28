@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/user/musickitkat/client"
-	"github.com/user/musickitkat/models"
+	"github.com/marcusziade/musickitkat/client"
+	"github.com/marcusziade/musickitkat/models"
 )
 
 // CatalogService provides access to the catalog endpoints of the Apple Music API.
@@ -182,12 +182,12 @@ func (s *CatalogService) GetSongPreviewURL(ctx context.Context, id string) (stri
 	if err != nil {
 		return "", err
 	}
-	
+
 	previewURL := song.GetPreviewURL()
 	if previewURL == "" {
 		return "", fmt.Errorf("no preview available for song: %s", id)
 	}
-	
+
 	return previewURL, nil
 }
 

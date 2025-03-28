@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/user/musickitkat/auth"
-	"github.com/user/musickitkat/client"
-	"github.com/user/musickitkat/services"
+	"github.com/marcusziade/musickitkat/auth"
+	"github.com/marcusziade/musickitkat/client"
+	"github.com/marcusziade/musickitkat/services"
 )
 
 // Version is the current version of the MusicKitKat SDK.
